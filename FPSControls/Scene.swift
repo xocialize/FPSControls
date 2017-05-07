@@ -39,7 +39,7 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
         super.init()
     }
 
-    func setupSceneWithView(scnView: SCNView) {
+    func setupSceneWithView(_ scnView: SCNView) {
 
         /**
         *  Setup Map, Scene View, Entities, Camera,
@@ -60,7 +60,7 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
         map = Map(image: UIImage(named:"Map")!)
     }
 
-    func setupView(view: SCNView) {
+    func setupView(_ view: SCNView) {
 
         self.sceneView = view
     }
@@ -69,10 +69,10 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
 
         for entity in map.entities {
             switch entity.type {
-            case .Hero:
+            case .hero:
 
                 heroNode = SCNNode()
-                heroNode.physicsBody = SCNPhysicsBody(type: .Dynamic, shape: SCNPhysicsShape(geometry: SCNCylinder(radius: 0.2, height: 1), options: nil))
+                heroNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNCylinder(radius: 0.2, height: 1), options: nil))
                 heroNode.physicsBody?.angularDamping = 0.9999999
                 heroNode.physicsBody?.damping = 0.9999999
                 heroNode.physicsBody?.rollingFriction = 0
@@ -87,12 +87,12 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
                 heroNode.position = SCNVector3(x: entity.x, y: 0.5, z: entity.y)
                 self.rootNode.addChildNode(heroNode)
 
-            case .Monster:
+            case .monster:
 
                 let monsterNode = SCNNode()
                 monsterNode.position = SCNVector3(x: entity.x, y: 0.3, z: entity.y)
                 monsterNode.geometry = SCNCylinder(radius: 0.15, height: 0.6)
-                monsterNode.physicsBody = SCNPhysicsBody(type: .Dynamic, shape: SCNPhysicsShape(geometry: monsterNode.geometry!, options: nil))
+                monsterNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: monsterNode.geometry!, options: nil))
                 monsterNode.physicsBody?.categoryBitMask = CollisionCategory.Monster
                 monsterNode.physicsBody?.collisionBitMask = CollisionCategory.All
                 if #available(iOS 9.0, *) {
@@ -125,7 +125,7 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
         //add walls
         for tile in map.tiles {
 
-            if tile.type == .Wall {
+            if tile.type == .wall {
 
                 //create walls
                 if tile.visibility.contains(.Top) {
@@ -186,7 +186,7 @@ class Scene: SCNScene, SCNSceneRendererDelegate {
         self.physicsWorld.timeStep = 1.0/360
 
         //set up map physics
-        mapNode.physicsBody = SCNPhysicsBody(type: .Static, shape: SCNPhysicsShape(node: mapNode, options: [SCNPhysicsShapeKeepAsCompoundKey: true]))
+        mapNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: mapNode, options: [SCNPhysicsShape.Option.keepAsCompound: true]))
         mapNode.physicsBody?.categoryBitMask = CollisionCategory.Map
         mapNode.physicsBody?.collisionBitMask = CollisionCategory.All
         if #available(iOS 9.0, *) {

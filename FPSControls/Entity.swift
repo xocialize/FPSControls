@@ -10,8 +10,8 @@ import Foundation
 
 enum EntityType {
     
-    case Hero
-    case Monster
+    case hero
+    case monster
 }
 
 class Entity {
