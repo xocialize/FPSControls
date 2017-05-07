@@ -14,64 +14,64 @@ extension ViewController: UIGestureRecognizerDelegate {
     internal func setupGestureRecognizers() {
 
         //look gesture
-        lookGesture = UIPanGestureRecognizer(target: self, action: "lookGestureRecognized:")
+        lookGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.lookGestureRecognized(_:)))
         lookGesture.delegate = self
         self.sceneView.addGestureRecognizer(lookGesture)
 
         //walk gesture
-        walkGesture = UIPanGestureRecognizer(target: self, action: "walkGestureRecognized:")
+        walkGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.walkGestureRecognized(_:)))
         walkGesture.delegate = self
         self.sceneView.addGestureRecognizer(walkGesture)
 
         //fire gesture
-        fireGesture = FireGestureRecognizer(target: self, action: "fireGestureRecognized:")
+        fireGesture = FireGestureRecognizer(target: self, action: #selector(ViewController.fireGestureRecognized(_:)))
         fireGesture.delegate = self
         self.sceneView.addGestureRecognizer(fireGesture)
     }
 
     //implement protocol methods for conformance
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
 
         if gestureRecognizer == lookGesture {
-            return touch.locationInView(self.view).x > self.view.frame.size.width / 2
+            return touch.location(in: self.view).x > self.view.frame.size.width / 2
         } else if gestureRecognizer == walkGesture {
-            return touch.locationInView(self.view).x < self.view.frame.size.width / 2
+            return touch.location(in: self.view).x < self.view.frame.size.width / 2
         }
         return true
     }
 
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 
         return true
     }
 
     //custom methods
-    func lookGestureRecognized(gesture: UIPanGestureRecognizer) {
+    func lookGestureRecognized(_ gesture: UIPanGestureRecognizer) {
 
         //get translation and convert to rotation
-        let translation = gesture.translationInView(self.sceneView)
+        let translation = gesture.translation(in: self.sceneView)
         let hAngle = acos(Float(translation.x) / 200) - Float(M_PI_2)
         let vAngle = acos(Float(translation.y) / 200) - Float(M_PI_2)
 
         //rotate hero
-        Scene.sharedInstance.heroNode.physicsBody?.applyTorque(SCNVector4(x: 0, y: 1, z: 0, w: hAngle), impulse: true)
+        Scene.sharedInstance.heroNode.physicsBody?.applyTorque(SCNVector4(x: 0, y: 1, z: 0, w: hAngle), asImpulse: true)
 
         //tilt camera
         Scene.sharedInstance.elevation = max(Float(-M_PI_4), min(Float(M_PI_4), Scene.sharedInstance.elevation + vAngle))
         Scene.sharedInstance.camNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: Scene.sharedInstance.elevation)
 
         //reset translation
-        gesture.setTranslation(CGPointZero, inView: self.sceneView)
+        gesture.setTranslation(CGPoint.zero, in: self.sceneView)
     }
 
-    func walkGestureRecognized(gesture: UIPanGestureRecognizer) {
+    func walkGestureRecognized(_ gesture: UIPanGestureRecognizer) {
 
-        if gesture.state == UIGestureRecognizerState.Ended || gesture.state == UIGestureRecognizerState.Cancelled {
-            gesture.setTranslation(CGPointZero, inView: self.sceneView)
+        if gesture.state == UIGestureRecognizerState.ended || gesture.state == UIGestureRecognizerState.cancelled {
+            gesture.setTranslation(CGPoint.zero, in: self.sceneView)
         }
     }
 
-    func fireGestureRecognized(gesture: FireGestureRecognizer) {
+    func fireGestureRecognized(_ gesture: FireGestureRecognizer) {
 
         //update timestamp
         let now = CFAbsoluteTimeGetCurrent()

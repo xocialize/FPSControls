@@ -10,12 +10,12 @@ import Foundation
 
 enum TileType {
     
-    case Rock
-    case Wall
-    case Floor
+    case rock
+    case wall
+    case floor
 }
 
-struct FaceVisibility : OptionSetType {
+struct FaceVisibility : OptionSet {
 
     let rawValue: UInt
     static let None = FaceVisibility(rawValue: 0)
@@ -29,20 +29,20 @@ class Tile {
     
     unowned let map: Map
     let x, y: Int
-    var type: TileType = .Rock
+    var type: TileType = .rock
     var visibility: FaceVisibility {
         var visibility: FaceVisibility = .None
-        if x > 0 && map.tile(x - 1, y).type == .Floor {
-            visibility.unionInPlace(.Left)
+        if x > 0 && map.tile(x - 1, y).type == .floor {
+            visibility.formUnion(.Left)
         }
-        if x < map.width - 1 && map.tile(x + 1, y).type == .Floor {
-            visibility.unionInPlace(.Right)
+        if x < map.width - 1 && map.tile(x + 1, y).type == .floor {
+            visibility.formUnion(.Right)
         }
-        if y > 0 && map.tile(x, y - 1).type == .Floor {
-            visibility.unionInPlace(.Top)
+        if y > 0 && map.tile(x, y - 1).type == .floor {
+            visibility.formUnion(.Top)
         }
-        if y < map.height - 1 && map.tile(x, y + 1).type == .Floor {
-            visibility.unionInPlace(.Bottom)
+        if y < map.height - 1 && map.tile(x, y + 1).type == .floor {
+            visibility.formUnion(.Bottom)
         }
         return visibility
     }

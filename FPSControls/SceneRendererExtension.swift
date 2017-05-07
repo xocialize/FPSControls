@@ -11,20 +11,20 @@ import SceneKit
 
 extension ViewController: SCNSceneRendererDelegate {
 
-    func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
+    func renderer(_ aRenderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
 
         //get walk gesture translation
-        let translation = walkGesture.translationInView(self.sceneView!)
+        let translation = walkGesture.translation(in: self.sceneView!)
 
         //create impulse vector for hero
-        let angle = Scene.sharedInstance.heroNode.presentationNode.rotation.w * Scene.sharedInstance.heroNode.presentationNode.rotation.y
+        let angle = Scene.sharedInstance.heroNode.presentation.rotation.w * Scene.sharedInstance.heroNode.presentation.rotation.y
         var impulse = SCNVector3(x: max(-1, min(1, Float(translation.x) / 50)), y: 0, z: max(-1, min(1, Float(-translation.y) / 50)))
         impulse = SCNVector3(
             x: impulse.x * cos(angle) - impulse.z * sin(angle),
             y: 0,
             z: impulse.x * -sin(angle) - impulse.z * cos(angle)
         )
-        Scene.sharedInstance.heroNode.physicsBody?.applyForce(impulse, impulse: true)
+        Scene.sharedInstance.heroNode.physicsBody?.applyForce(impulse, asImpulse: true)
 
         //handle firing
         let now = CFAbsoluteTimeGetCurrent()
@@ -33,7 +33,7 @@ extension ViewController: SCNSceneRendererDelegate {
             if now - lastFired > 1 / fireRate {
 
                 //get hero direction vector
-                let angle = Scene.sharedInstance.heroNode.presentationNode.rotation.w * Scene.sharedInstance.heroNode.presentationNode.rotation.y
+                let angle = Scene.sharedInstance.heroNode.presentation.rotation.w * Scene.sharedInstance.heroNode.presentation.rotation.y
                 var direction = SCNVector3(x: -sin(angle), y: 0, z: -cos(angle))
 
                 //get elevation
@@ -44,13 +44,13 @@ extension ViewController: SCNSceneRendererDelegate {
                     if self.bullets.count < self.maxBullets {
                         return SCNNode()
                     } else {
-                        return self.bullets.removeAtIndex(0)
+                        return self.bullets.remove(at: 0)
                     }
                 }()
                 bullets.append(bulletNode)
                 bulletNode.geometry = SCNBox(width: CGFloat(bulletRadius) * 2, height: CGFloat(bulletRadius) * 2, length: CGFloat(bulletRadius) * 2, chamferRadius: CGFloat(bulletRadius))
-                bulletNode.position = SCNVector3(x: Scene.sharedInstance.heroNode.presentationNode.position.x, y: 0.4, z: Scene.sharedInstance.heroNode.presentationNode.position.z)
-                bulletNode.physicsBody = SCNPhysicsBody(type: .Dynamic, shape: SCNPhysicsShape(geometry: bulletNode.geometry!, options: nil))
+                bulletNode.position = SCNVector3(x: Scene.sharedInstance.heroNode.presentation.position.x, y: 0.4, z: Scene.sharedInstance.heroNode.presentation.position.z)
+                bulletNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: bulletNode.geometry!, options: nil))
                 bulletNode.physicsBody?.categoryBitMask = CollisionCategory.Bullet
                 bulletNode.physicsBody?.collisionBitMask = CollisionCategory.All ^ CollisionCategory.Hero
                 bulletNode.physicsBody?.velocityFactor = SCNVector3(x: 1, y: 0.5, z: 1)
@@ -58,7 +58,7 @@ extension ViewController: SCNSceneRendererDelegate {
 
                 //apply impulse
                 let impulse = SCNVector3(x: direction.x * Float(bulletImpulse), y: direction.y * Float(bulletImpulse), z: direction.z * Float(bulletImpulse))
-                bulletNode.physicsBody?.applyForce(impulse, impulse: true)
+                bulletNode.physicsBody?.applyForce(impulse, asImpulse: true)
 
                 //update timestamp
                 lastFired = now

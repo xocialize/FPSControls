@@ -27,8 +27,8 @@ class ViewController: UIViewController {
     let maxBullets = 100
     
     var tapCount = 0
-    var lastTappedFire: NSTimeInterval = 0
-    var lastFired: NSTimeInterval = 0
+    var lastTappedFire: TimeInterval = 0
+    var lastFired: TimeInterval = 0
     var bullets = [SCNNode]()
 
     override func viewDidLoad() {
@@ -51,21 +51,21 @@ class ViewController: UIViewController {
         self.sceneView!.scene = Scene.sharedInstance
         self.sceneView!.delegate = self
         self.sceneView!.showsStatistics = true
-        self.sceneView!.backgroundColor = UIColor.blackColor()
+        self.sceneView!.backgroundColor = UIColor.black
         self.setupGestureRecognizers()
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
-        UIView.animateWithDuration(0.5) {
+        UIView.animate(withDuration: 0.5, animations: {
             self.overlayView.alpha = 1
-        }
+        }) 
     }
     
     @IBAction func hideOverlay() {
         
-        UIView.animateWithDuration(0.5) {
+        UIView.animate(withDuration: 0.5, animations: {
             self.overlayView.alpha = 0
-        }
+        }) 
     }
 }
